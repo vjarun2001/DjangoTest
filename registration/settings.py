@@ -11,6 +11,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+import requests
+
+def get_aws_public_ip():
+    try:
+        response = requests.get('http://169.254.169.254/latest/meta-data/public-ipv4', timeout=2)
+        response.raise_for_status()
+        return response.text.strip()
+    except requests.RequestException as e:
+        print(f"Error getting AWS public IP: {e}")
+        return None
+
+# Get the public IP address
+PUBLIC_IP = get_aws_public_ip()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +38,7 @@ SECRET_KEY = 'django-insecure-&*b=-9t^(w$tgha7ir!#a3#9$@%w6*d(j+xr(*0xv*=g&^8b(%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [{% url 'home' %}]
+ALLOWED_HOSTS = [PUBLIC_IP]
 
 
 # Application definition
